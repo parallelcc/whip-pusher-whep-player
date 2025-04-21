@@ -156,7 +156,7 @@ function WHIPPusher() {
     getDevices();
   }, []);
 
-  const startStream = async () => {
+  const startStreaming = async () => {
     try {
       setError(null);
 
@@ -234,7 +234,7 @@ function WHIPPusher() {
       pc.oniceconnectionstatechange = () => {
         if (pc.iceConnectionState === 'failed') {
           setError('Connection failed. Please check your network and try again.');
-          stopStream();
+          stopStreaming();
         }
       };
 
@@ -302,13 +302,15 @@ function WHIPPusher() {
         });
       }, 1000);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to start stream';
+      const errorMessage = error instanceof Error ? 
+        error.message || `${error.name || 'Error'} occurred while starting streaming` : 
+        'Failed to start streaming';
       setError(errorMessage);
-      await stopStream();
+      await stopStreaming();
     }
   };
 
-  const stopStream = async () => {
+  const stopStreaming = async () => {
     try {
       setIsStreaming(false);
       if (statsIntervalRef.current) {
@@ -346,7 +348,9 @@ function WHIPPusher() {
         whipClientRef.current = null;
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to stop stream';
+      const errorMessage = error instanceof Error ? 
+        error.message || `${error.name || 'Error'} occurred while stopping streaming` : 
+        'Failed to stop streaming';
       setError(errorMessage);
     }
   };
@@ -554,7 +558,7 @@ function WHIPPusher() {
 
         <div className="flex justify-center">
           <button
-            onClick={isStreaming ? stopStream : startStream}
+            onClick={isStreaming ? stopStreaming : startStreaming}
             className={`px-6 py-2 rounded-md text-white font-medium ${
               isStreaming 
                 ? 'bg-red-600 hover:bg-red-700' 

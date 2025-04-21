@@ -95,17 +95,17 @@ function WHEPPlayer() {
               const codec = stats.get(stat.codecId);
               newVideoStats.codec = codec?.mimeType.split('/')[1].toUpperCase();
             }
-            
+
             newVideoStats.bitrate = interval > 0 ? 
               Math.round(((videoBytesReceived - lastBytesReceivedRef.current.video) * 8) / interval) : 
               0;
-            
+
             newVideoStats.frameRate = stat.framesPerSecond;
             
             if (stat.frameWidth && stat.frameHeight) {
               newVideoStats.resolution = `${stat.frameWidth}x${stat.frameHeight}`;
             }
-            
+
             lastBytesReceivedRef.current.video = videoBytesReceived;
             setVideoStats(newVideoStats);
           }
@@ -117,7 +117,7 @@ function WHEPPlayer() {
               const codec = stats.get(stat.codecId);
               newAudioStats.codec = codec?.mimeType.split('/')[1].toUpperCase();
             }
-            
+
             newAudioStats.bitrate = interval > 0 ? 
               Math.round(((audioBytesReceived - lastBytesReceivedRef.current.audio) * 8) / interval) : 
               0;
@@ -125,7 +125,7 @@ function WHEPPlayer() {
             if (typeof stat.audioLevel === 'number') {
               newAudioStats.level = Math.round(stat.audioLevel * 100);
             }
-            
+
             lastBytesReceivedRef.current.audio = audioBytesReceived;
             setAudioStats(newAudioStats);
           }
@@ -138,7 +138,9 @@ function WHEPPlayer() {
         });
       }, 1000);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to start playback';
+      const errorMessage = error instanceof Error ? 
+        error.message || `${error.name || 'Error'} occurred while starting playing` : 
+        'Failed to start playing';
       setError(errorMessage);
       await stopPlaying();
     }
@@ -182,7 +184,9 @@ function WHEPPlayer() {
         whepClientRef.current = null;
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to stop playback';
+      const errorMessage = error instanceof Error ? 
+        error.message || `${error.name || 'Error'} occurred while stopping playing` : 
+        'Failed to stop playing';
       setError(errorMessage);
     }
   };
