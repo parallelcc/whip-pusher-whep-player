@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink, useLocation, Navigate } from 'react-router-dom';
-import { Video, Podcast as Broadcast } from 'lucide-react';
+import { PlayCircle, Radio } from 'lucide-react';
 import WHIPPusher from './components/WHIPPusher';
 import WHEPPlayer from './components/WHEPPlayer';
 
@@ -15,8 +15,8 @@ function PageTitle() {
     const favicon = document.querySelector('link[rel="icon"]');
     if (favicon) {
       const icon = path === '/whip' ? 
-        `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8'%3E%3C/circle%3E%3Cpath d='M17.7 9.3a8 8 0 0 0-11.4 0'%3E%3C/path%3E%3Cpath d='M15.8 11.2a4 4 0 0 0-7.6 0'%3E%3C/path%3E%3Cpath d='M14 13.1a2 2 0 0 0-4 0'%3E%3C/path%3E%3C/svg%3E` :
-        `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m22 8-6 4 6 4V8Z'%3E%3C/path%3E%3Crect x='2' y='6' width='14' height='12' rx='2' ry='2'%3E%3C/rect%3E%3C/svg%3E`;
+        `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXJhZGlvLWljb24gbHVjaWRlLXJhZGlvIj48cGF0aCBkPSJNNC45IDE5LjFDMSAxNS4yIDEgOC44IDQuOSA0LjkiLz48cGF0aCBkPSJNNy44IDE2LjJjLTIuMy0yLjMtMi4zLTYuMSAwLTguNSIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjIiLz48cGF0aCBkPSJNMTYuMiA3LjhjMi4zIDIuMyAyLjMgNi4xIDAgOC41Ii8+PHBhdGggZD0iTTE5LjEgNC45QzIzIDguOCAyMyAxNS4xIDE5LjEgMTkiLz48L3N2Zz4=` :
+        `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNpcmNsZS1wbGF5LWljb24gbHVjaWRlLWNpcmNsZS1wbGF5Ij48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIvPjxwb2x5Z29uIHBvaW50cz0iMTAgOCAxNiAxMiAxMCAxNiAxMCA4Ii8+PC9zdmc+`;
       favicon.setAttribute('href', icon);
     }
   }, [path]);
@@ -36,37 +36,37 @@ function App() {
                 <NavLink
                   to="/whip"
                   className={({ isActive }) =>
-                    `flex items-center whitespace-nowrap px-3 py-2 rounded-md text-sm font-medium ${
+                    `inline-flex items-center px-4 rounded-md text-sm font-medium leading-none ${
                       isActive
                         ? 'text-blue-600 bg-blue-50'
                         : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
                     }`
                   }
                 >
-                  <Broadcast className="h-5 w-5 mr-1.5" />
-                  <span className="md:hidden">WHIP</span>
-                  <span className="hidden md:inline">WHIP Pusher</span>
+                  <Radio className="h-5 w-5 mr-2 flex-shrink-0" />
+                  <span className="md:hidden leading-[40px]">WHIP</span>
+                  <span className="hidden md:inline leading-[40px]">WHIP Pusher</span>
                 </NavLink>
                 <NavLink
                   to="/whep"
                   className={({ isActive }) =>
-                    `flex items-center whitespace-nowrap px-3 py-2 rounded-md text-sm font-medium ${
+                    `inline-flex items-center px-4 rounded-md text-sm font-medium leading-none ${
                       isActive
                         ? 'text-blue-600 bg-blue-50'
                         : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
                     }`
                   }
                 >
-                  <Video className="h-5 w-5 mr-1.5" />
-                  <span className="md:hidden">WHEP</span>
-                  <span className="hidden md:inline">WHEP Player</span>
+                  <PlayCircle className="h-5 w-5 mr-2 flex-shrink-0" />
+                  <span className="md:hidden leading-[40px]">WHEP</span>
+                  <span className="hidden md:inline leading-[40px]">WHEP Player</span>
                 </NavLink>
               </div>
               <a
                 href="https://github.com/parallelcc/whip-pusher-whep-player"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center px-3 py-2 text-gray-700 hover:text-blue-600"
+                className="inline-flex items-center px-4 text-gray-700 hover:text-blue-600"
                 title="View on GitHub"
               >
                 <svg width="20" height="20" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg" className="fill-current">

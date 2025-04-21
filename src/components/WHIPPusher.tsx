@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { WHIPClient } from 'whip-whep/whip';
-import { Settings, Video, Volume2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Settings, Webcam, Mic, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface VideoStats {
   codec?: string;
@@ -391,7 +391,7 @@ function WHIPPusher() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-              <Video className="h-4 w-4" /> Video Device
+              <Webcam className="h-4 w-4" /> Video Device
             </label>
             <select
               value={selectedVideo}
@@ -408,7 +408,7 @@ function WHIPPusher() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-              <Volume2 className="h-4 w-4" /> Audio Device
+              <Mic className="h-4 w-4" /> Audio Device
             </label>
             <select
               value={selectedAudio}
