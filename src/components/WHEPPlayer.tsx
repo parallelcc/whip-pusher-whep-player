@@ -12,6 +12,7 @@ interface VideoStats {
 interface AudioStats {
   codec?: string;
   bitrate?: number;
+  level?: number;
 }
 
 interface ConnectionStats {
@@ -120,6 +121,10 @@ function WHEPPlayer() {
             newAudioStats.bitrate = interval > 0 ? 
               Math.round(((audioBytesReceived - lastBytesReceivedRef.current.audio) * 8) / interval) : 
               0;
+
+            if (typeof stat.audioLevel === 'number') {
+              newAudioStats.level = Math.round(stat.audioLevel * 100);
+            }
             
             lastBytesReceivedRef.current.audio = audioBytesReceived;
             setAudioStats(newAudioStats);
@@ -284,6 +289,10 @@ function WHEPPlayer() {
                 <div className="bg-white p-3 rounded shadow">
                   <div className="text-sm text-gray-600">Bitrate</div>
                   <div className="font-medium">{audioStats.bitrate != undefined ? `${Math.round(audioStats.bitrate / 1000)} kbps` : 'N/A'}</div>
+                </div>
+                <div className="bg-white p-3 rounded shadow">
+                  <div className="text-sm text-gray-600">Level</div>
+                  <div className="font-medium">{audioStats.level != undefined ? `${audioStats.level}%` : 'N/A'}</div>
                 </div>
               </div>
             </div>
