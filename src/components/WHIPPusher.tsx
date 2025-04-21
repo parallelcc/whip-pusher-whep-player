@@ -132,10 +132,14 @@ function WHIPPusher() {
   useEffect(() => {
     async function getDevices() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        const devices = await navigator.mediaDevices.enumerateDevices();
+        let devices = await navigator.mediaDevices.enumerateDevices();
         
-        stream.getTracks().forEach(track => track.stop());
+        // Only request permissions if no labeled devices are found
+        if (!devices.some(device => device.label)) {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+          stream.getTracks().forEach(track => track.stop());
+          devices = await navigator.mediaDevices.enumerateDevices();
+        }
         
         setVideoDevices(devices.filter(device => device.kind === 'videoinput'));
         setAudioDevices(devices.filter(device => device.kind === 'audioinput'));
