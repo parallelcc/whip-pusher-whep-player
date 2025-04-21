@@ -16,8 +16,9 @@ interface AudioStats {
 }
 
 interface ConnectionStats {
-  dtlsState?: string;
+  connectionState?: string;
   iceState?: string;
+  dtlsState?: string;
 }
 
 interface BytesSent {
@@ -134,7 +135,6 @@ function WHIPPusher() {
       try {
         let devices = await navigator.mediaDevices.enumerateDevices();
         
-        // Only request permissions if no labeled devices are found
         if (!devices.some(device => device.label)) {
           const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
           stream.getTracks().forEach(track => track.stop());
@@ -232,10 +232,11 @@ function WHIPPusher() {
       }
 
       pc.oniceconnectionstatechange = () => {
-        if (pc.iceConnectionState === 'failed') {
-          setError('Connection failed. Please check your network and try again.');
-          stopStreaming();
-        }
+        const iceState = pc.iceConnectionState;
+        setConnectionStats(prev => ({
+          ...prev,
+          iceState
+        }));
       };
 
       const whipClient = new WHIPClient();
@@ -248,12 +249,21 @@ function WHIPPusher() {
 
         const pc = pcRef.current;
         const stats = await pc.getStats();
+
+        if (pc !== pcRef.current) return;
         const now = Date.now();
         const interval = (now - lastBytesSentRef.current.timestamp) / 1000;
-        
+
         stats.forEach(stat => {
           if (stat.type === 'media-source' && stat.kind === 'audio' && typeof stat.audioLevel === 'number') {
             setAudioStats(prev => ({ ...prev, level: Math.round(stat.audioLevel * 100) }));
+          }
+          if (stat.type === 'transport') {
+            setConnectionStats(prev => ({
+              ...prev,
+              iceState: stat.iceState,
+              dtlsState: stat.dtlsState
+            }));
           }
           if (stat.type === 'outbound-rtp' && stat.kind === 'video') {
             const videoBytesSent = stat.bytesSent;
@@ -296,10 +306,16 @@ function WHIPPusher() {
         });
 
         lastBytesSentRef.current.timestamp = now;
-        setConnectionStats({ 
-          iceState: pc.iceConnectionState,
-          dtlsState: pc.connectionState 
-        });
+
+        const connectionState = pc.connectionState;
+        setConnectionStats(prev => ({
+          ...prev,
+          connectionState
+        }));
+        if (connectionState === 'failed') {
+          setError('Connection failed. Please check your network and try again.');
+          stopStreaming();
+        }
       }, 1000);
     } catch (error) {
       const errorMessage = error instanceof Error ? 
@@ -322,16 +338,8 @@ function WHIPPusher() {
       lastBytesSentRef.current = { video: 0, audio: 0, timestamp: 0 };
       const pc = pcRef.current;
       if (pc) {
-        if (pc.iceConnectionState === 'failed') {
-          setConnectionStats({ 
-            iceState: pc.iceConnectionState,
-            dtlsState: pc.connectionState 
-          });
-        } else {
-          setConnectionStats({ 
-            iceState: 'closed',
-            dtlsState: 'closed' 
-          });
+        if (pc.connectionState !== 'failed') {
+          setConnectionStats({});
         }
         pc.close();
         pcRef.current = null;
@@ -586,11 +594,15 @@ function WHIPPusher() {
               <h3 className="font-medium text-gray-700">Connection</h3>
               <div className="grid grid-cols-1 gap-2">
                 <div className="bg-white p-3 rounded shadow">
-                  <div className="text-sm text-gray-600">ICE Status</div>
+                  <div className="text-sm text-gray-600">Connection State</div>
+                  <div className="font-medium">{connectionStats.connectionState || 'N/A'}</div>
+                </div>
+                <div className="bg-white p-3 rounded shadow">
+                  <div className="text-sm text-gray-600">ICE State</div>
                   <div className="font-medium">{connectionStats.iceState || 'N/A'}</div>
                 </div>
                 <div className="bg-white p-3 rounded shadow">
-                  <div className="text-sm text-gray-600">DTLS Status</div>
+                  <div className="text-sm text-gray-600">DTLS State</div>
                   <div className="font-medium">{connectionStats.dtlsState || 'N/A'}</div>
                 </div>
               </div>
