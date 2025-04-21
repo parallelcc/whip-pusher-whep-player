@@ -30,34 +30,36 @@ function App() {
       <PageTitle />
       <div className="min-h-screen bg-gray-100">
         <nav className="bg-white shadow-md">
-          <div className="max-w-4xl mx-auto px-4">
-            <div className="flex justify-between h-16">
-              <div className="flex space-x-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex h-16 items-center justify-between px-8">
+              <div className="flex items-center space-x-4">
                 <NavLink
                   to="/whip"
                   className={({ isActive }) =>
-                    `flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                    `flex items-center whitespace-nowrap px-3 py-2 rounded-md text-sm font-medium ${
                       isActive
                         ? 'text-blue-600 bg-blue-50'
                         : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
                     }`
                   }
                 >
-                  <Broadcast className="h-5 w-5 mr-2" />
-                  WHIP Pusher
+                  <Broadcast className="h-5 w-5 mr-1.5" />
+                  <span className="md:hidden">WHIP</span>
+                  <span className="hidden md:inline">WHIP Pusher</span>
                 </NavLink>
                 <NavLink
                   to="/whep"
                   className={({ isActive }) =>
-                    `flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                    `flex items-center whitespace-nowrap px-3 py-2 rounded-md text-sm font-medium ${
                       isActive
                         ? 'text-blue-600 bg-blue-50'
                         : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
                     }`
                   }
                 >
-                  <Video className="h-5 w-5 mr-2" />
-                  WHEP Player
+                  <Video className="h-5 w-5 mr-1.5" />
+                  <span className="md:hidden">WHEP</span>
+                  <span className="hidden md:inline">WHEP Player</span>
                 </NavLink>
               </div>
               <a
@@ -74,7 +76,7 @@ function App() {
             </div>
           </div>
         </nav>
-        <div className="p-8">
+        <div className="max-w-4xl mx-auto px-8 py-8">
           <Routes>
             <Route path="/" element={<Navigate to="/whip" replace />} />
             <Route path="/whip" element={<WHIPPusher />} />
