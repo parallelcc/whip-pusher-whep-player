@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { WHIPClient } from 'whip-whep/whip';
-import { Settings, Radio, Video, Volume2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Settings, Video, Volume2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface VideoStats {
+  codec?: string;
+  bitrate?: number;
   frameRate?: number;
   resolution?: string;
-  bitrate?: number;
-  codec?: string;
 }
 
 interface AudioStats {
+  codec?: string;
   bitrate?: number;
   level?: number;
-  codec?: string;
 }
 
 interface ConnectionStats {
@@ -253,36 +253,40 @@ function WHIPPusher() {
           }
           if (stat.type === 'outbound-rtp' && stat.kind === 'video') {
             const videoBytesSent = stat.bytesSent;
-            const newVideoStats: VideoStats = {
-              frameRate: stat.framesPerSecond,
-              bitrate: interval > 0 ? 
-                Math.round(((videoBytesSent - lastBytesSentRef.current.video) * 8) / interval) : 
-                0
-            };
-            lastBytesSentRef.current.video = videoBytesSent;
+            const newVideoStats: VideoStats = {};
             
-            if (stat.frameWidth && stat.frameHeight) {
-              newVideoStats.resolution = `${stat.frameWidth}x${stat.frameHeight}`;
-            }
             if (stat.codecId) {
               const codec = stats.get(stat.codecId);
               newVideoStats.codec = codec?.mimeType.split('/')[1].toUpperCase();
             }
+
+            newVideoStats.bitrate = interval > 0 ? 
+              Math.round(((videoBytesSent - lastBytesSentRef.current.video) * 8) / interval) : 
+              0;
+
+            newVideoStats.frameRate = stat.framesPerSecond;
+            
+            if (stat.frameWidth && stat.frameHeight) {
+              newVideoStats.resolution = `${stat.frameWidth}x${stat.frameHeight}`;
+            }
+
+            lastBytesSentRef.current.video = videoBytesSent;
             setVideoStats(newVideoStats);
           }
           if (stat.type === 'outbound-rtp' && stat.kind === 'audio') {
             const audioBytesSent = stat.bytesSent;
-            const newAudioStats: AudioStats = {
-              bitrate: interval > 0 ? 
-                Math.round(((audioBytesSent - lastBytesSentRef.current.audio) * 8) / interval) : 
-                0
-            };
-            lastBytesSentRef.current.audio = audioBytesSent;
-            
+            const newAudioStats: AudioStats = {};
+
             if (stat.codecId) {
               const codec = stats.get(stat.codecId);
               newAudioStats.codec = codec?.mimeType.split('/')[1].toUpperCase();
             }
+
+            newAudioStats.bitrate = interval > 0 ? 
+              Math.round(((audioBytesSent - lastBytesSentRef.current.audio) * 8) / interval) : 
+              0;
+
+            lastBytesSentRef.current.audio = audioBytesSent;
             setAudioStats(prev => ({ ...prev, ...newAudioStats }));
           }
         });
@@ -591,16 +595,16 @@ function WHIPPusher() {
                   <div className="font-medium">{videoStats.codec || 'N/A'}</div>
                 </div>
                 <div className="bg-white p-3 rounded shadow">
+                  <div className="text-sm text-gray-600">Bitrate</div>
+                  <div className="font-medium">{videoStats.bitrate != undefined ? `${Math.round(videoStats.bitrate / 1000)} kbps` : 'N/A'}</div>
+                </div>
+                <div className="bg-white p-3 rounded shadow">
                   <div className="text-sm text-gray-600">Frame Rate</div>
                   <div className="font-medium">{videoStats.frameRate != undefined ? `${videoStats.frameRate} FPS` : 'N/A'}</div>
                 </div>
                 <div className="bg-white p-3 rounded shadow">
                   <div className="text-sm text-gray-600">Resolution</div>
                   <div className="font-medium">{videoStats.resolution || 'N/A'}</div>
-                </div>
-                <div className="bg-white p-3 rounded shadow">
-                  <div className="text-sm text-gray-600">Bitrate</div>
-                  <div className="font-medium">{videoStats.bitrate != undefined ? `${Math.round(videoStats.bitrate / 1000)} kbps` : 'N/A'}</div>
                 </div>
               </div>
             </div>
