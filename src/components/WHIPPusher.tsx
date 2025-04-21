@@ -164,19 +164,19 @@ function WHIPPusher() {
         throw new Error('Please enter a WHIP URL');
       }
 
-      const constraints = {
-        video: {
-          deviceId: selectedVideo,
+      const constraints: MediaStreamConstraints = {
+        video: selectedVideo ? {
+          deviceId: { exact: selectedVideo },
           ...(selectedResolution.width && selectedResolution.height ? {
-            width: { ideal: selectedResolution.width },
-            height: { ideal: selectedResolution.height }
-          } : {}),
-        },
-        audio: {
-          deviceId: selectedAudio,
+            width: { exact: selectedResolution.width },
+            height: { exact: selectedResolution.height }
+          } : {})
+        } : false,
+        audio: selectedAudio ? {
+          deviceId: { exact: selectedAudio },
           echoCancellation: true,
           noiseSuppression: true
-        }
+        } : false
       };
 
       streamRef.current = await navigator.mediaDevices.getUserMedia(constraints);
